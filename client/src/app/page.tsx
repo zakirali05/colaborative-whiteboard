@@ -1,9 +1,9 @@
-import Canvas from "@/components/canvas";
+import WhiteBoard from "@/components/white-board";
 
 export default function Home() {
   return (
     <main>
-      <Canvas />
+      <WhiteBoard />
     </main>
   );
 }
