@@ -12,34 +12,43 @@ const ShapeSelector = () => {
     >
       <div
         onClick={() => SET_IS_LOCKED(!IS_LOCKED)}
-        className={`flex items-center  ${
+        className={`relative flex items-center  ${
           IS_LOCKED ? "bg-rose-500/30" : ""
-        }  justify-center  p-2 cursor-pointer hover:bg-rose-500/30 
+        }  justify-center  p-2.5 cursor-pointer hover:bg-rose-500/30 
          
              border-r border-white/20 rounded-l-md px-4
             
         `}
       >
         <Lock className="h-5 w-5 text-white/60 " />
+        <span className="text-white/30 text-[10px] right-[2px] bottom-[2px] absolute">
+          L
+        </span>
       </div>
       {SHAPES.map((shape) => (
         <div
           onClick={() => SET_OPTION(shape.label)}
           key={shape.id}
-          className={`flex items-center ${
+          className={`relative flex items-center ${
             OPTION === shape.label ? "bg-rose-500/30" : ""
-          }    justify-center rounded-md p-2 cursor-pointer hover:bg-rose-500/30 
+          }    justify-center rounded-md p-2.5 cursor-pointer hover:bg-rose-500/30 
             
           `}
         >
           <shape.icon className="h-5 w-5 text-white/60" />
+          <span className="text-white/30 text-[10px] right-[2px] bottom-[2px] absolute">
+            {shape.short_cut}
+          </span>
         </div>
       ))}
       <div
         onClick={download}
-        className={`flex items-center   justify-center  p-2 cursor-pointer hover:bg-rose-500/30  border-l border-white/20 rounded-r-md px-4 `}
+        className={`relative flex items-center   justify-center  p-2 cursor-pointer hover:bg-rose-500/30  border-l border-white/20 rounded-r-md px-4 `}
       >
         <Download className="h-5 w-5 text-white/60 " />
+        <span className="text-white/30 text-[10px] right-[2px] bottom-[2px] absolute">
+          S
+        </span>
       </div>
     </div>
   );

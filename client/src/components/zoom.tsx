@@ -12,8 +12,8 @@ const Zoom = () => {
       <div className="p-1 bg-zinc-900 rounded-md  shadow-md  flex items-center justify-center">
         <div
           onClick={() => {
-            if (ZOOM === 200) {
-              SET_ZOOM(200);
+            if (ZOOM === 400) {
+              SET_ZOOM(400);
             } else {
               SET_ZOOM(ZOOM + 10);
             }

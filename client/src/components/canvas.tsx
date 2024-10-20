@@ -4,6 +4,7 @@ import { useWhiteBoard } from "@/contexts/board_context";
 import { shapeInGivenBoundry } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
+import { v4 as UUIDV4 } from "uuid";
 
 const generator = rough.generator();
 
@@ -16,6 +17,8 @@ const Canvas = () => {
     STROKE,
     SET_OPTION,
     IS_LOCKED,
+
+    SET_IS_LOCKED,
     FONT_SIZE,
     ZOOM,
   } = useWhiteBoard();
@@ -24,7 +27,8 @@ const Canvas = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [textValue, setTextValue] = useState("ZakirAli");
   const [selectedShape, setSelectedShape] = useState<any>(null);
-  console.log("shapes", shapes);
+
+  console.log("Selected shape is : ", selectedShape);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,8 +46,10 @@ const Canvas = () => {
           setShapes([
             ...shapes,
             {
+              id: UUIDV4(),
               x,
               y,
+              z: Date.now(),
               width: 0,
               height: 0,
               BACKGROUND_COLOUR,
@@ -55,28 +61,57 @@ const Canvas = () => {
         case "CIRCLE":
           setShapes([
             ...shapes,
-            { x, y, radius: 0, BACKGROUND_COLOUR, STROKE_COLOUR, type: OPTION },
+            {
+              id: UUIDV4(),
+              x,
+              y,
+              z: Date.now(),
+              radius: 0,
+              BACKGROUND_COLOUR,
+              STROKE_COLOUR,
+              type: OPTION,
+            },
           ]);
           break;
 
         case "ARROW":
           setShapes([
             ...shapes,
-            { x1: x, y1: y, x2: x, y2: y, STROKE_COLOUR, type: OPTION },
+            {
+              id: UUIDV4(),
+              x1: x,
+              y1: y,
+              x2: x,
+              y2: y,
+              z: Date.now(),
+              STROKE_COLOUR,
+              type: OPTION,
+            },
           ]);
           break;
         case "PENCIL":
           setShapes([
             ...shapes,
-            { x, y, points: [[x, y]], STROKE_COLOUR, type: OPTION, STROKE },
+            {
+              id: UUIDV4(),
+              x,
+              y,
+              z: Date.now(),
+              points: [[x, y]],
+              STROKE_COLOUR,
+              type: OPTION,
+              STROKE,
+            },
           ]);
           break;
         case "TYPE":
           setShapes([
             ...shapes,
             {
+              id: UUIDV4(),
               x,
               y,
+              z: Date.now(),
               TEXT_COLOUR: STROKE_COLOUR,
               type: OPTION,
             },
@@ -91,7 +126,23 @@ const Canvas = () => {
           break;
         case "MOUSE_POINTER":
           const shapeInBoundry = shapeInGivenBoundry(x, y, shapes);
-          setSelectedShape(shapeInBoundry);
+          if (shapeInBoundry.z != 0) {
+            setSelectedShape(shapeInBoundry);
+          } else {
+            setSelectedShape(null);
+          }
+          break;
+        case "ERASER":
+          const shapeInBoundryEraser = shapeInGivenBoundry(
+            e.clientX,
+            e.clientY,
+            shapes
+          );
+          let shapesCopy = shapes.filter(
+            (shape) => shape.id !== shapeInBoundryEraser.id
+          );
+          setShapes(shapesCopy);
+
           break;
         default:
           break;
@@ -159,12 +210,16 @@ const Canvas = () => {
           case "TYPE":
             break;
           case "MOUSE_POINTER":
-            if (selectedShape.length) {
-              switch (selectedShape[0].shape.type) {
+            if (selectedShape) {
+              switch (selectedShape.type) {
                 case "SQUARE":
                   let shapesCopy = [...shapes];
-                  shapesCopy[selectedShape[0].index] = {
-                    ...selectedShape[0].shape,
+                  shapesCopy[
+                    shapesCopy.findIndex(
+                      (shape) => shape.id === selectedShape.id
+                    )
+                  ] = {
+                    ...selectedShape,
                     x: x,
                     y: y,
                   };
@@ -172,8 +227,12 @@ const Canvas = () => {
                   break;
                 case "CIRCLE":
                   let shapesCopyCircle = [...shapes];
-                  shapesCopyCircle[selectedShape[0].index] = {
-                    ...selectedShape[0].shape,
+                  shapesCopyCircle[
+                    shapesCopyCircle.findIndex(
+                      (shape) => shape.id === selectedShape.id
+                    )
+                  ] = {
+                    ...selectedShape,
                     x: x,
                     y: y,
                   };
@@ -181,10 +240,14 @@ const Canvas = () => {
                   break;
                 case "ARROW":
                   let shapesCopyArrow = [...shapes];
-                  shapesCopyArrow[selectedShape[0].index] = {
-                    ...selectedShape[0].shape,
+                  shapesCopyArrow[
+                    shapesCopyArrow.findIndex(
+                      (shape) => shape.id === selectedShape.id
+                    )
+                  ] = {
+                    ...selectedShape,
                     x1: x,
-                    y1: y,
+                    y2: y,
                   };
                   setShapes(shapesCopyArrow);
                   break;
@@ -203,20 +266,72 @@ const Canvas = () => {
 
     const handleMouseUp = () => {
       setIsDrawing(false);
-      setSelectedShape(null);
+
+      // setSelectedShape(null);
       if (!IS_LOCKED && OPTION !== "TYPE" && OPTION !== "PENCIL") {
         SET_OPTION("MOUSE_POINTER");
       }
     };
 
+    const onKeyPress = (e: any) => {
+      switch (e.key) {
+        case "Delete":
+          if (selectedShape !== null) {
+            let shapesCopy = shapes.filter(
+              (shape) => shape.id !== selectedShape.id
+            );
+            setSelectedShape(null);
+            setShapes(shapesCopy);
+          }
+          break;
+        case "l":
+          SET_IS_LOCKED(!IS_LOCKED);
+          break;
+        case "h":
+          SET_OPTION("HAND");
+          break;
+        case "1":
+          SET_OPTION("MOUSE_POINTER");
+          break;
+
+        case "2":
+          SET_OPTION("HAND");
+          break;
+        case "3":
+          SET_OPTION("SQUARE");
+          break;
+        case "4":
+          SET_OPTION("CIRCLE");
+          break;
+        case "5":
+          SET_OPTION("ARROW");
+          break;
+        case "6":
+          SET_OPTION("PENCIL");
+          break;
+        case "7":
+          SET_OPTION("ERASER");
+          break;
+        case "8":
+          SET_OPTION("TYPE");
+          break;
+        case "s":
+          // download img logic
+          break;
+        default:
+          break;
+      }
+    };
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("keydown", onKeyPress);
 
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("keydown", onKeyPress);
     };
   }, [
     isDrawing,
@@ -227,9 +342,8 @@ const Canvas = () => {
     STROKE,
     FONT_SIZE,
     textValue,
+    IS_LOCKED,
   ]);
-
-  console.log(selectedShape);
 
   const drawShapes = (context: CanvasRenderingContext2D, roughCanvas: any) => {
     shapes.forEach((shape) => {

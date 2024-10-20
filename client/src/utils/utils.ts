@@ -24,7 +24,7 @@ export const shapeInGivenBoundry = (x: number, y: number, shapes: any[]) => {
           const crossProduct = v1x * v2y - v1y * v2x;
 
           // Check if the cross product is zero
-          return true;
+          return crossProduct === 0;
         case "PENCIL":
           return false;
         case "TYPE":
@@ -33,7 +33,5 @@ export const shapeInGivenBoundry = (x: number, y: number, shapes: any[]) => {
           return false;
       }
     })
-    .map((shape, index) => {
-      return { shape, index };
-    });
+    .reduce((max, obj) => (obj.z > max.z ? obj : max), { z: 0 });
 };
