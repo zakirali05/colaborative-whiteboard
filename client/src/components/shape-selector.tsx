@@ -1,11 +1,11 @@
 import { SHAPES } from "@/constants/shapes";
 import { useWhiteBoard } from "@/contexts/board_context";
+import { download } from "@/utils/download";
 import { Download, Lock } from "lucide-react";
 import React from "react";
 
 const ShapeSelector = () => {
   const { OPTION, SET_OPTION, IS_LOCKED, SET_IS_LOCKED } = useWhiteBoard();
-  const download = () => {};
   return (
     <div
       className={`p-1 rounded-md z-[1000]   shadow-lg bg-zinc-900 flex items-center justify-around gap-2 fixed top-2.5      left-[calc(50%-200px)]`}

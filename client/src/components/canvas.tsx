@@ -1,6 +1,7 @@
 "use client";
 
 import { useWhiteBoard } from "@/contexts/board_context";
+import { download } from "@/utils/download";
 import { shapeInGivenBoundry } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
@@ -317,6 +318,7 @@ const Canvas = () => {
           break;
         case "s":
           // download img logic
+          download();
           break;
         default:
           break;
