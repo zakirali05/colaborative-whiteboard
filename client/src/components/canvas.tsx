@@ -253,11 +253,39 @@ const Canvas = () => {
                   };
                   setShapes(shapesCopyArrow);
                   break;
+                case "PENCIL":
+                  // let shapesCopyPencil = [...shapes];
+                  // shapesCopyPencil[
+                  //   shapesCopyPencil.findIndex(
+                  //     (shape) => shape.id === selectedShape.id
+                  //   )
+                  // ] = {
+                  //   ...selectedShape,
+                  //   x: x,
+                  //   y: y,
+                  //   points: [[x, y], ...selectedShape.points],
+                  // };
+                  // setShapes(shapesCopyPencil);
+                  break;
+                case "TEXT":
+                  // let shapesCopyText = [...shapes];
+                  // shapesCopyText[
+                  //   shapesCopyText.findIndex(
+                  //     (shape) => shape.id === selectedShape.id
+                  //   )
+                  // ] = {
+                  //   ...selectedShape,
+                  //   x: x,
+                  //   y: y,
+                  // };
+                  // setShapes(shapesCopyText);
+                  break;
                 default:
                   break;
               }
             }
             break;
+
           default:
             break;
         }

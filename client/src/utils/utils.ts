@@ -33,7 +33,7 @@ export const shapeInGivenBoundry = (x: number, y: number, shapes: any[]) => {
           });
           return !!shape;
         case "TYPE":
-          return false;
+          return shape.x == x && shape.y == y;
         default:
           return false;
       }
