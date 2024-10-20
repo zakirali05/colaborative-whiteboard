@@ -8,7 +8,7 @@ const ShapeSelector = () => {
   const download = () => {};
   return (
     <div
-      className={`p-1 rounded-md z-[1000]   shadow-lg bg-zinc-900 flex items-center justify-around gap-2 absolute top-2.5      left-[calc(50%-200px)]`}
+      className={`p-1 rounded-md z-[1000]   shadow-lg bg-zinc-900 flex items-center justify-around gap-2 fixed top-2.5      left-[calc(50%-200px)]`}
     >
       <div
         onClick={() => SET_IS_LOCKED(!IS_LOCKED)}

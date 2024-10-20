@@ -8,12 +8,12 @@ const Zoom = () => {
   const undo = () => {};
   const redo = () => {};
   return (
-    <div className="flex z-[1000] items-center gap-5 absolute left-5 bottom-2">
+    <div className="flex z-[1000] items-center gap-5 fixed left-5 bottom-2">
       <div className="p-1 bg-zinc-900 rounded-md  shadow-md  flex items-center justify-center">
         <div
           onClick={() => {
-            if (ZOOM === 100) {
-              SET_ZOOM(100);
+            if (ZOOM === 200) {
+              SET_ZOOM(200);
             } else {
               SET_ZOOM(ZOOM + 10);
             }

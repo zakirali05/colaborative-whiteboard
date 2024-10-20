@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Circle,
   Download,
+  Eraser,
   Hand,
   MousePointerClick,
   Pencil,
@@ -16,6 +17,7 @@ export type SHAPES_TYPE =
   | "CIRCLE"
   | "ARROW"
   | "PENCIL"
+  | "ERASER"
   | "TYPE";
 
 type shape = {
@@ -58,6 +60,11 @@ export const SHAPES: shape[] = [
   },
   {
     id: 6,
+    icon: Eraser,
+    label: "ERASER",
+  },
+  {
+    id: 7,
     icon: Type,
     label: "TYPE",
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useWhiteBoard } from "@/contexts/board_context";
+import { shapeInGivenBoundry } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 
@@ -16,10 +17,14 @@ const Canvas = () => {
     SET_OPTION,
     IS_LOCKED,
     FONT_SIZE,
+    ZOOM,
   } = useWhiteBoard();
 
   const [shapes, setShapes] = useState<any[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [textValue, setTextValue] = useState("ZakirAli");
+  const [selectedShape, setSelectedShape] = useState<any>(null);
+  console.log("shapes", shapes);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,14 +81,17 @@ const Canvas = () => {
               type: OPTION,
             },
           ]);
-          // context?.clearRect(0, 0, canvas.width, canvas.height);
-          // drawShapes(context!, roughCanvas);
+
           if (!context) {
             return;
           }
           context.font = `${FONT_SIZE}px Arial`;
           context.fillStyle = STROKE_COLOUR;
-          context.fillText("HELLO ZakirAli", x, y);
+          context.fillText(textValue, x, y);
+          break;
+        case "MOUSE_POINTER":
+          const shapeInBoundry = shapeInGivenBoundry(x, y, shapes);
+          setSelectedShape(shapeInBoundry);
           break;
         default:
           break;
@@ -150,6 +158,41 @@ const Canvas = () => {
             break;
           case "TYPE":
             break;
+          case "MOUSE_POINTER":
+            if (selectedShape.length) {
+              switch (selectedShape[0].shape.type) {
+                case "SQUARE":
+                  let shapesCopy = [...shapes];
+                  shapesCopy[selectedShape[0].index] = {
+                    ...selectedShape[0].shape,
+                    x: x,
+                    y: y,
+                  };
+                  setShapes(shapesCopy);
+                  break;
+                case "CIRCLE":
+                  let shapesCopyCircle = [...shapes];
+                  shapesCopyCircle[selectedShape[0].index] = {
+                    ...selectedShape[0].shape,
+                    x: x,
+                    y: y,
+                  };
+                  setShapes(shapesCopyCircle);
+                  break;
+                case "ARROW":
+                  let shapesCopyArrow = [...shapes];
+                  shapesCopyArrow[selectedShape[0].index] = {
+                    ...selectedShape[0].shape,
+                    x1: x,
+                    y1: y,
+                  };
+                  setShapes(shapesCopyArrow);
+                  break;
+                default:
+                  break;
+              }
+            }
+            break;
           default:
             break;
         }
@@ -160,6 +203,7 @@ const Canvas = () => {
 
     const handleMouseUp = () => {
       setIsDrawing(false);
+      setSelectedShape(null);
       if (!IS_LOCKED && OPTION !== "TYPE" && OPTION !== "PENCIL") {
         SET_OPTION("MOUSE_POINTER");
       }
@@ -182,9 +226,10 @@ const Canvas = () => {
     OPTION,
     STROKE,
     FONT_SIZE,
+    textValue,
   ]);
 
-  console.log(shapes);
+  console.log(selectedShape);
 
   const drawShapes = (context: CanvasRenderingContext2D, roughCanvas: any) => {
     shapes.forEach((shape) => {
@@ -225,8 +270,6 @@ const Canvas = () => {
           context.stroke();
           break;
         case "TYPE":
-          // context.font = "20px Arial";
-          // context.fillText("HELLO ZakirAli", shape.x, shape.y);
           break;
         default:
           break;
@@ -238,9 +281,10 @@ const Canvas = () => {
     <canvas
       id="canvas"
       ref={canvasRef}
+      style={{ scale: `${ZOOM}%` }}
       height={window.innerHeight}
       width={window.innerWidth}
-    />
+    ></canvas>
   );
 };
 

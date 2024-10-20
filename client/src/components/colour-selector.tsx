@@ -18,7 +18,7 @@ const ColourSelector = () => {
     SET_FONT_SIZE,
   } = useWhiteBoard();
   return (
-    <div className="absolute z-[1000] p-4 flex flex-col gap-4 rounded-md bg-zinc-900 shadow-md top-12 left-5">
+    <div className="fixed z-[1000] p-4 flex flex-col gap-4 rounded-md bg-zinc-900 shadow-md top-12 left-5">
       <div>
         <p className="text-xs text-white/60">Background</p>
         <div className="flex items-center gap-2">
