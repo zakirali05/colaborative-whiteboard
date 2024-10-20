@@ -26,7 +26,12 @@ export const shapeInGivenBoundry = (x: number, y: number, shapes: any[]) => {
           // Check if the cross product is zero
           return crossProduct === 0;
         case "PENCIL":
-          return false;
+          const isPencil = shape.points.map((point: any) => {
+            if (point.x === x && point.y === y) {
+              return shape;
+            }
+          });
+          return !!shape;
         case "TYPE":
           return false;
         default:

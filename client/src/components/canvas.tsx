@@ -139,6 +139,7 @@ const Canvas = () => {
             e.clientY,
             shapes
           );
+
           let shapesCopy = shapes.filter(
             (shape) => shape.id !== shapeInBoundryEraser.id
           );
@@ -345,6 +346,7 @@ const Canvas = () => {
     FONT_SIZE,
     textValue,
     IS_LOCKED,
+    selectedShape,
   ]);
 
   const drawShapes = (context: CanvasRenderingContext2D, roughCanvas: any) => {
