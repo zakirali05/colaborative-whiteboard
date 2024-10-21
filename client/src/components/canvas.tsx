@@ -39,6 +39,8 @@ const Canvas = () => {
     if (!canvas) return;
 
     const context = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const handleMouseDown = (e: any) => {
       setIsDrawing(true);
@@ -451,8 +453,8 @@ const Canvas = () => {
         id="canvas"
         ref={canvasRef}
         style={{ scale: `${ZOOM}%` }}
-        height={window.innerHeight}
-        width={window.innerWidth}
+        // height={window.innerHeight}
+        // width={window.innerWidth}
       ></canvas>
     </>
   );
