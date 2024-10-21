@@ -264,8 +264,6 @@ const Canvas = () => {
           default:
             break;
         }
-        context?.clearRect(0, 0, canvas.width, canvas.height);
-        drawShapes(context!, roughCanvas);
       }
     };
 
@@ -349,6 +347,8 @@ const Canvas = () => {
     canvas.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("keydown", onKeyPress);
     window.addEventListener("wheel", scrollHandler);
+    context?.clearRect(0, 0, canvas.width, canvas.height);
+    drawShapes(context!, roughCanvas);
 
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
