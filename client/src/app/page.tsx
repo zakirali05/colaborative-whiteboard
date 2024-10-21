@@ -1,9 +1,11 @@
 import WhiteBoard from "@/components/white-board";
 
-export default function Home() {
+const Home = () => {
   return (
     <main>
       <WhiteBoard />
     </main>
   );
-}
+};
+
+export default Home;

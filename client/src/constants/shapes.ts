@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   Circle,
-  Download,
   Eraser,
   Hand,
   MousePointerClick,

@@ -28,6 +28,8 @@ const Canvas = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [textValue, setTextValue] = useState("ZakirAli");
   const [selectedShape, setSelectedShape] = useState<any>(null);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const textRef = useRef<HTMLTextAreaElement | null>(null);
 
   console.log("Selected shape is : ", selectedShape);
 
@@ -106,24 +108,18 @@ const Canvas = () => {
           ]);
           break;
         case "TYPE":
-          setShapes([
-            ...shapes,
-            {
-              id: UUIDV4(),
-              x,
-              y,
-              z: Date.now(),
-              TEXT_COLOUR: STROKE_COLOUR,
-              type: OPTION,
-            },
-          ]);
+          const newShape = {
+            id: UUIDV4(),
+            x,
+            y,
+            z: Date.now(),
+            text: "",
+            TEXT_COLOUR: STROKE_COLOUR,
+            type: OPTION,
+          };
+          setShapes([...shapes, newShape]);
+          setSelectedShape(newShape);
 
-          if (!context) {
-            return;
-          }
-          context.font = `${FONT_SIZE}px Arial`;
-          context.fillStyle = STROKE_COLOUR;
-          context.fillText(textValue, x, y);
           break;
         case "MOUSE_POINTER":
           const shapeInBoundry = shapeInGivenBoundry(x, y, shapes);
@@ -140,7 +136,7 @@ const Canvas = () => {
             shapes
           );
 
-          let shapesCopy = shapes.filter(
+          const shapesCopy = shapes.filter(
             (shape) => shape.id !== shapeInBoundryEraser.id
           );
           setShapes(shapesCopy);
@@ -215,7 +211,7 @@ const Canvas = () => {
             if (selectedShape) {
               switch (selectedShape.type) {
                 case "SQUARE":
-                  let shapesCopy = [...shapes];
+                  const shapesCopy = [...shapes];
                   shapesCopy[
                     shapesCopy.findIndex(
                       (shape) => shape.id === selectedShape.id
@@ -228,7 +224,7 @@ const Canvas = () => {
                   setShapes(shapesCopy);
                   break;
                 case "CIRCLE":
-                  let shapesCopyCircle = [...shapes];
+                  const shapesCopyCircle = [...shapes];
                   shapesCopyCircle[
                     shapesCopyCircle.findIndex(
                       (shape) => shape.id === selectedShape.id
@@ -241,7 +237,7 @@ const Canvas = () => {
                   setShapes(shapesCopyCircle);
                   break;
                 case "ARROW":
-                  let shapesCopyArrow = [...shapes];
+                  const shapesCopyArrow = [...shapes];
                   shapesCopyArrow[
                     shapesCopyArrow.findIndex(
                       (shape) => shape.id === selectedShape.id
@@ -254,31 +250,8 @@ const Canvas = () => {
                   setShapes(shapesCopyArrow);
                   break;
                 case "PENCIL":
-                  // let shapesCopyPencil = [...shapes];
-                  // shapesCopyPencil[
-                  //   shapesCopyPencil.findIndex(
-                  //     (shape) => shape.id === selectedShape.id
-                  //   )
-                  // ] = {
-                  //   ...selectedShape,
-                  //   x: x,
-                  //   y: y,
-                  //   points: [[x, y], ...selectedShape.points],
-                  // };
-                  // setShapes(shapesCopyPencil);
                   break;
                 case "TEXT":
-                  // let shapesCopyText = [...shapes];
-                  // shapesCopyText[
-                  //   shapesCopyText.findIndex(
-                  //     (shape) => shape.id === selectedShape.id
-                  //   )
-                  // ] = {
-                  //   ...selectedShape,
-                  //   x: x,
-                  //   y: y,
-                  // };
-                  // setShapes(shapesCopyText);
                   break;
                 default:
                   break;
@@ -304,10 +277,13 @@ const Canvas = () => {
     };
 
     const onKeyPress = (e: any) => {
+      if (OPTION === "TYPE") {
+        return;
+      }
       switch (e.key) {
         case "Delete":
           if (selectedShape !== null) {
-            let shapesCopy = shapes.filter(
+            const shapesCopy = shapes.filter(
               (shape) => shape.id !== selectedShape.id
             );
             setSelectedShape(null);
@@ -353,16 +329,31 @@ const Canvas = () => {
           break;
       }
     };
+
+    if (OPTION === "TYPE" && selectedShape) {
+      const textarea = textRef.current;
+      textarea?.focus();
+    }
+
+    const scrollHandler = (e: any) => {
+      // context?.save();
+      // console.log(e);
+      // setPanOffset({ x: panOffset.x - e.deltaX, y: panOffset.y - e.deltaY });
+      // context?.translate(panOffset.x, panOffset.y);
+      // context?.restore();
+    };
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("keydown", onKeyPress);
+    window.addEventListener("wheel", scrollHandler);
 
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("keydown", onKeyPress);
+      window.removeEventListener("wheel", scrollHandler);
     };
   }, [
     isDrawing,
@@ -375,6 +366,7 @@ const Canvas = () => {
     textValue,
     IS_LOCKED,
     selectedShape,
+    panOffset,
   ]);
 
   const drawShapes = (context: CanvasRenderingContext2D, roughCanvas: any) => {
@@ -416,6 +408,9 @@ const Canvas = () => {
           context.stroke();
           break;
         case "TYPE":
+          context.font = `${FONT_SIZE}px Arial`;
+          context.fillStyle = STROKE_COLOUR;
+          context.fillText(shape.text, shape.x, shape.y);
           break;
         default:
           break;
@@ -423,14 +418,43 @@ const Canvas = () => {
     });
   };
 
+  const handleBlur = (e: any) => {
+    const updatedShapes = shapes.map((shape) => {
+      if (shape.id === selectedShape.id) {
+        return { ...shape, text: e.target.value }; // Update the name property
+      }
+      return shape;
+    });
+    setShapes(updatedShapes);
+    // setSelectedShape(null);
+  };
   return (
-    <canvas
-      id="canvas"
-      ref={canvasRef}
-      style={{ scale: `${ZOOM}%` }}
-      height={window.innerHeight}
-      width={window.innerWidth}
-    ></canvas>
+    <>
+      {OPTION === "TYPE" && selectedShape && (
+        <textarea
+          ref={textRef}
+          onBlur={handleBlur}
+          style={{
+            position: "absolute",
+            top: selectedShape.y,
+            left: selectedShape.x,
+            margin: 0,
+            padding: 0,
+            background: "transparent",
+            border: 0,
+            outline: 0,
+            font: `${FONT_SIZE}px Arial`,
+          }}
+        />
+      )}
+      <canvas
+        id="canvas"
+        ref={canvasRef}
+        style={{ scale: `${ZOOM}%` }}
+        height={window.innerHeight}
+        width={window.innerWidth}
+      ></canvas>
+    </>
   );
 };
 
